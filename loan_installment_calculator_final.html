@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Auto Loan Calculator</title>
+  <style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root{
+  --bg-dark: #0a0e1a;
+  --bg-card: #111827;
+  --gold: #fbbf24;
+  --gold-light: #fcd34d;
+  --accent: #f59e0b;
+  --text: #f9fafb;
+  --text-dim: #9ca3af;
+  --success: #10b981;
+  --border: rgba(251, 191, 36, 0.15);
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+body {
+  background: 
+    radial-gradient(ellipse 800px 600px at 50% -20%, rgba(251, 191, 36, 0.15), transparent),
+    var(--bg-dark);
+}
+
+.container{
+  min-height: 100vh;
+  padding: 20px 16px 100px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-top: 8px;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.input-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-card:active {
+  transform: scale(0.98);
+}
+
+.input-card label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.input-card .icon {
+  font-size: 1.25rem;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-card input {
+  width: 100%;
+  padding: 16px 16px 16px 44px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  -moz-appearance: textfield;
+}
+
+.input-card input::-webkit-outer-spin-button,
+.input-card input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-card input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.input-prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.25rem;
+  color: var(--gold);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.results-section {
+  margin-bottom: 20px;
+}
+
+.result-card {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.result-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--gold), var(--accent));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.result-title {
+  font-size: 0.875rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.result-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin: 0;
+  line-height: 1;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.result-item {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+}
+
+.result-item-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.result-item-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--gold), var(--accent));
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.3);
+  margin-bottom: 16px;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.btn-icon {
+  font-size: 1.125rem;
+  transition: transform 0.3s ease;
+}
+
+.btn.expanded .btn-icon {
+  transform: rotate(180deg);
+}
+
+.schedule {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.schedule.show {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.schedule::-webkit-scrollbar {
+  width: 6px;
+}
+
+.schedule::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.schedule::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 1;
+}
+
+th {
+  padding: 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  color: var(--text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tbody tr:hover {
+  background: rgba(251, 191, 36, 0.05);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>💰 AutoLoan Car Installments Plan</h1>
+    <p>Calculate your monthly installments</p>
+  </div>
+
+  <div class="input-section">
+    <div class="input-card">
+      <label>
+        <span>Loan Amount</span>
+        <span class="icon">💵</span>
+      </label>
+      <div class="input-wrapper">
+        <span class="input-prefix">$</span>
+        <input id="amount" type="text" value="600000" inputmode="numeric"/>
+      </div>
+    </div>
+    
+    <div class="input-card">
+      <label>
+        <span>Annual Rate</span>
+        <span class="icon">📊</span>
+      </label>
+      <div class="input-wrapper">
+        <span class="input-prefix">%</span>
+        <input id="rate" type="number" step="0.01" value="22" inputmode="decimal"/>
+      </div>
+    </div>
+    
+    <div class="input-card">
+      <label>
+        <span>Months</span>
+        <span class="icon">📅</span>
+      </label>
+      <div class="input-wrapper">
+        <input id="months" type="number" value="84" inputmode="numeric" style="padding: 16px;"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-section">
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-icon">💳</div>
+        <div class="result-title">Monthly Payment</div>
+      </div>
+      <p class="result-value" id="flatEmi">—</p>
+      
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="result-item-label">Flat Rate</div>
+          <div class="result-item-value" id="flatRate">—</div>
+        </div>
+        <div class="result-item">
+          <div class="result-item-label">Total Interest</div>
+          <div class="result-item-value" id="totalInterest">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" onclick="toggleSchedule()" id="toggleBtn">
+    <span>View Payment Schedule</span>
+    <span class="btn-icon">▼</span>
+  </button>
+  
+  <div class="schedule" id="schedule"></div>
+</div>
+
+<script>
+const amountInput = document.getElementById('amount');
+const rateInput = document.getElementById('rate');
+const monthsInput = document.getElementById('months');
+
+function formatNumber(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function removeCommas(str) {
+  return str.replace(/,/g, '');
+}
+
+amountInput.addEventListener('input', function(e) {
+  let value = removeCommas(e.target.value);
+  value = value.replace(/[^\d]/g, '');
+  
+  if (value) {
+    let cursorPos = e.target.selectionStart;
+    let oldLength = e.target.value.length;
+    e.target.value = formatNumber(value);
+    let newLength = e.target.value.length;
+    let diff = newLength - oldLength;
+    e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+  } else {
+    e.target.value = '';
+  }
+  calculate();
+});
+
+if (amountInput.value) {
+  amountInput.value = formatNumber(removeCommas(amountInput.value));
+}
+
+rateInput.addEventListener('input', calculate);
+monthsInput.addEventListener('input', calculate);
+
+[amountInput, rateInput, monthsInput].forEach(function(input) {
+  input.addEventListener('focus', function(e) {
+    e.target.select();
+  });
+});
+
+function calculate() {
+  const P = parseFloat(removeCommas(amountInput.value)) || 0;
+  const annualReducingRate = parseFloat(rateInput.value) || 0;
+  const n = parseFloat(monthsInput.value) || 0;
+  
+  if (!P || !annualReducingRate || !n) {
+    document.getElementById('flatEmi').innerText = '—';
+    document.getElementById('flatRate').innerText = '—';
+    document.getElementById('totalInterest').innerText = '—';
+    return;
+  }
+
+  const r = annualReducingRate / 12 / 100;
+  const emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  const totalPaid = emi * n;
+  const totalInterest = totalPaid - P;
+  const flatRateEq = (totalInterest / P / (n / 12)) * 100;
+  const flatEmi = totalPaid / n;
+
+  document.getElementById('flatEmi').innerText = '$' + formatNumber(flatEmi.toFixed(2));
+  document.getElementById('flatRate').innerText = flatRateEq.toFixed(2) + '%';
+  document.getElementById('totalInterest').innerText = '$' + formatNumber(totalInterest.toFixed(0));
+
+  let rows = '<table><thead><tr><th>Month</th><th style="text-align: right;">Payment</th></tr></thead><tbody>';
+  
+  for(let i = 1; i <= n; i++) {
+    rows += '<tr><td>Month ' + i + '</td><td style="text-align: right; font-weight: 600;">$' + formatNumber(flatEmi.toFixed(2)) + '</td></tr>';
+  }
+  
+  rows += '</tbody></table>';
+  document.getElementById('schedule').innerHTML = rows;
+}
+
+function toggleSchedule() {
+  const el = document.getElementById('schedule');
+  const btn = document.getElementById('toggleBtn');
+  const isOpen = el.classList.contains('show');
+  
+  if (isOpen) {
+    el.classList.remove('show');
+    btn.classList.remove('expanded');
+    btn.querySelector('span:first-child').innerText = 'View Payment Schedule';
+  } else {
+    el.classList.add('show');
+    btn.classList.add('expanded');
+    btn.querySelector('span:first-child').innerText = 'Hide Payment Schedule';
+    setTimeout(function() {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+}
+
+calculate();
+</script>
+
+</body>
+</html>
